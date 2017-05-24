@@ -16,6 +16,7 @@ library(purrr)
 library(knitr)
 library(broom)
 library(tidyr)
+library(purrrlyr)
 # inspect the data frame
 glimpse(aec2013_fp)
 # show the first few rows
@@ -280,8 +281,9 @@ census_and_election %>%
   theme_bw()
 
 ## ----senate, echo=TRUE, tidy=TRUE, warning=FALSE, error=FALSE, message=FALSE, fig.width=5, fig.height=3----
+library(readr)
 senate <-
-  read.csv("SenateSenatorsElected2013.csv", stringsAsFactors = FALSE)
+  read_csv("http://results.aec.gov.au/17496/Website/Downloads/SenateSenatorsElectedDownload-17496.csv", skip=1)
 
   coalition <- c(
   "Country Liberals (NT)",

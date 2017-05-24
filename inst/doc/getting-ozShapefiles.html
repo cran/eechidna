@@ -4,15 +4,15 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="author" content="Heike Hofmann" />
+<meta name="author" content="Heike Hofmann, Di Cook" />
 
-<meta name="date" content="2016-05-23" />
+<meta name="date" content="2017-05-24" />
 
 <title>Getting Oz Electorate shapefiles into shape</title>
 
@@ -69,8 +69,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Getting Oz Electorate shapefiles into shape</h1>
-<h4 class="author"><em>Heike Hofmann</em></h4>
-<h4 class="date"><em>2016-05-23</em></h4>
+<h4 class="author"><em>Heike Hofmann, Di Cook</em></h4>
+<h4 class="date"><em>2017-05-24</em></h4>
 
 
 <div id="TOC">
@@ -83,14 +83,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <p>The Australian Electorate Commission publishes the boundaries of the electorates on their website at <a href="http://www.aec.gov.au/Electorates/gis/gis_datadownload.htm" class="uri">http://www.aec.gov.au/Electorates/gis/gis_datadownload.htm</a>.</p>
 <p>Once the files (preferably the national files) are downloaded, unzip the file (it will build a folder with a set of files). We want to read the shapes contained in the <code>shp</code> file into R.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(maptools)
-
-<span class="co"># shapeFile contains the path to the shp file:</span>
-shapeFile &lt;-<span class="st"> &quot;national-esri-16122011/COM20111216_ELB_region.shp&quot;</span>
-sF &lt;-<span class="st"> </span><span class="kw">readShapeSpatial</span>(shapeFile)
-<span class="kw">class</span>(sF)</code></pre></div>
+<p>For the 2016 election, the national electorate boundaries are given in mapinfo format (<a href="http://www.aec.gov.au/Electorates/gis/files/nt-midmif-07022017.zip" class="uri">http://www.aec.gov.au/Electorates/gis/files/nt-midmif-07022017.zip</a>). The <code>rgdal</code> library can be used to read this format:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rgdal)
+sF &lt;-<span class="st"> </span><span class="kw">readOGR</span>(<span class="dt">dsn=</span><span class="st">&quot;national-midmif-09052016/COM_ELB.TAB&quot;</span>, <span class="dt">layer=</span><span class="st">&quot;COM_ELB&quot;</span>)</code></pre></div>
 <p><code>sF</code> is a spatial data frame containing all of the polygons. We use the <code>rmapshaper</code> package available from ateucher’s github page to thin the polygons while preserving the geography:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">require</span>(rmapshaper)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rmapshaper)</code></pre></div>
 <p>If the library is not available, install it from github using <code>devtools::install_github(&quot;ateucher/rmapshaper&quot;)</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sFsmall &lt;-<span class="st"> </span><span class="kw">ms_simplify</span>(sF, <span class="dt">keep=</span><span class="fl">0.05</span>) <span class="co"># use instead of thinnedSpatialPoly</span></code></pre></div>
 <p><code>keep</code> indicates the percentage of points we want to keep in the polygons. 5% makes the electorate boundary still quite recognizable, but reduce the overall size of the map considerably, making it faster to plot.</p>
@@ -113,8 +110,12 @@ sF &lt;-<span class="st"> </span><span class="kw">readShapeSpatial</span>(shapeF
 <p>We need to make sure that <code>group</code> and <code>piece</code> are kept as factor variables - if they are allowed to be converted to numeric values, it messes things up, because as factor levels <code>9</code> and <code>9.0</code> are distinct, whereas they are not when interpreted as numbers …</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nat_map$group &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;g&quot;</span>,nat_map$group,<span class="dt">sep=</span><span class="st">&quot;.&quot;</span>)
 nat_map$piece &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;p&quot;</span>,nat_map$piece,<span class="dt">sep=</span><span class="st">&quot;.&quot;</span>)</code></pre></div>
+<p>It is useful to have the electorate name and state attached to the map.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nms &lt;-<span class="st"> </span>sFsmall@data %&gt;%<span class="st"> </span><span class="kw">select</span>(Elect_div, State)
+nms$id &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="dv">1</span>:<span class="dv">150</span>)
+nat_map &lt;-<span class="st"> </span><span class="kw">left_join</span>(nat_map, nms, <span class="dt">by=</span><span class="st">&quot;id&quot;</span>)</code></pre></div>
 <p>The map data is ready to be exported to a file:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(nat_map, <span class="st">&quot;National-map-2013.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(nat_map, <span class="st">&quot;National-map-2016.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
 </div>
 <div id="getting-centroids" class="section level3">
 <h3>Getting centroids</h3>
@@ -135,13 +136,13 @@ centroid &lt;-<span class="st"> </span>function(i, polys) {
 centroids &lt;-<span class="st"> </span><span class="kw">seq_along</span>(polys) %&gt;%<span class="st"> </span>purrr::<span class="kw">map_df</span>(centroid, <span class="dt">polys=</span>polys)
 <span class="kw">head</span>(centroids)</code></pre></div>
 <p>The centroids come in the same order as the data (luckily) and we just extend the data set for the electorates by this information, and finally export:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nat_data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(nat_data, centroids)
-<span class="kw">write.csv</span>(nat_data, <span class="st">&quot;National-data-2013.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
-<p>Finally, just to check the data, a map of the Australian electorates colored by their size as given in the data (variable <code>AREA_SQKM</code>):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nat_data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(nat_data, centroids)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(nat_data, <span class="st">&quot;National-data-2016.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
+<p>Finally, just to check the data, a map of the Australian electorates colored by their size as given in the data (variable <code>Area_SqKm</code>):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
 <span class="kw">library</span>(ggthemes)
 <span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">map_id=</span>id), <span class="dt">data=</span>nat_data) +
-<span class="st">  </span><span class="kw">geom_map</span>(<span class="kw">aes</span>(<span class="dt">fill=</span>AREA_SQKM), <span class="dt">map=</span>nat_map) +
+<span class="st">  </span><span class="kw">geom_map</span>(<span class="kw">aes</span>(<span class="dt">fill=</span>Area_SqKm), <span class="dt">map=</span>nat_map) +
 <span class="st">  </span><span class="kw">expand_limits</span>(<span class="dt">x=</span>nat_map$long, <span class="dt">y=</span>nat_map$lat) +<span class="st"> </span>
 <span class="st">  </span><span class="kw">theme_map</span>()</code></pre></div>
 </div>
@@ -153,7 +154,7 @@ centroids &lt;-<span class="st"> </span><span class="kw">seq_along</span>(polys)
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

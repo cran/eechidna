@@ -28,7 +28,7 @@ opts_chunk$set(fig.width = 6,
 
 `eechidna` (Electoral Commission Handling Intelligent Data Nationally for Australia) is an R package that makes it easy to look at the data from the 2011 Australian Census, and the 2013 Federal Election.
 
-This vignette documents how to access the data from the 2013 Federal Election (House of Representatives (first preferences and two party preferred). We obtained these data from http://results.aec.gov.au/ . This package incorporates data that is copyright Commonwealth of Australia (Australian Electoral Commission) 2016. 
+This vignette documents how to access the data from the 2013 Federal Election (House of Representatives (first preferences and two party preferred). We obtained these data from http://results.aec.gov.au/ . This package incorporates data that is copyright Commonwealth of Australia (Australian Electoral Commission) 2013. 
 
 In this vignette we show a few typical methods to explore the data, inspired by [Peter Ellis's](https://github.com/ellisp/) work on NZ election data. 
 
@@ -53,6 +53,7 @@ library(purrr)
 library(knitr)
 library(broom)
 library(tidyr)
+library(purrrlyr)
 # inspect the data frame
 glimpse(aec2013_fp)
 # show the first few rows
@@ -110,9 +111,9 @@ total_votes_for_parties %>%
   kable
 ```
 
-The table above shows a different perspective, with the Labor Party recieving the most ordinary votes. Even thought the Labor party won the most votes, the Liberal party did better after the preferences were assigned, and won the election. The preference flow can make a big difference to the results of the election.
+The table above shows a similar result, with the Liberal Party recieving the most ordinary votes. 
 
-And we can plot the ordinary vote count like so:
+We can plot the ordinary vote count like so:
 
 ```{r plot_total_votes_for_parties,  fig.height = 6}
 ggplot(total_votes_for_parties, 
@@ -148,7 +149,7 @@ who_most_votes %>%
   kable
 ```
 
-But this is a crude measure of how successful a candidate was in the election, because electorates with more people will result in more votes for the winner, even if the victory is only by a tiny margin. So let's see remove the effect of the population size in the electorates by finding out who won the highest proportion of votes in their electorate. 
+But this is a crude measure of how successful a candidate was in the election, because electorates with more people will result in more votes for the winner, even if the victory is only by a tiny margin. So let's remove the effect of the population size in the electorates by finding out who won the highest proportion of votes in their electorate. 
 
 ```{r who_highest_proportion-votes}
 who_most_votes_prop <- 
@@ -395,8 +396,9 @@ census_and_election %>%
 A quick look at the senate results for 2013, using barchart by overall composition of the senate, and by state. 
 
 ```{r senate, echo=TRUE, tidy=TRUE, warning=FALSE, error=FALSE, message=FALSE, fig.width=5, fig.height=3}
+library(readr)
 senate <-
-  read.csv("SenateSenatorsElected2013.csv", stringsAsFactors = FALSE)
+  read_csv("http://results.aec.gov.au/17496/Website/Downloads/SenateSenatorsElectedDownload-17496.csv", skip=1)
 
   coalition <- c(
   "Country Liberals (NT)",

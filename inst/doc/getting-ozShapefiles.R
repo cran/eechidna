@@ -5,7 +5,7 @@ opts_chunk$set(eval = FALSE,
                message = FALSE)
 
 
-## ---- message=FALSE------------------------------------------------------
+## ---- eval=FALSE, echo=FALSE---------------------------------------------
 #  library(maptools)
 #  
 #  # shapeFile contains the path to the shp file:
@@ -14,7 +14,11 @@ opts_chunk$set(eval = FALSE,
 #  class(sF)
 
 ## ---- message=FALSE------------------------------------------------------
-#  require(rmapshaper)
+#  library(rgdal)
+#  sF <- readOGR(dsn="national-midmif-09052016/COM_ELB.TAB", layer="COM_ELB")
+
+## ---- message=FALSE------------------------------------------------------
+#  library(rmapshaper)
 
 ## ---- message=FALSE------------------------------------------------------
 #  sFsmall <- ms_simplify(sF, keep=0.05) # use instead of thinnedSpatialPoly
@@ -32,14 +36,18 @@ opts_chunk$set(eval = FALSE,
 ## ------------------------------------------------------------------------
 #  nat_map <- ggplot2::fortify(sFsmall)
 #  head(nat_map)
-#  
 
 ## ------------------------------------------------------------------------
 #  nat_map$group <- paste("g",nat_map$group,sep=".")
 #  nat_map$piece <- paste("p",nat_map$piece,sep=".")
 
 ## ------------------------------------------------------------------------
-#  write.csv(nat_map, "National-map-2013.csv", row.names=FALSE)
+#  nms <- sFsmall@data %>% select(Elect_div, State)
+#  nms$id <- as.character(1:150)
+#  nat_map <- left_join(nat_map, nms, by="id")
+
+## ----eval=FALSE----------------------------------------------------------
+#  write.csv(nat_map, "National-map-2016.csv", row.names=FALSE)
 
 ## ------------------------------------------------------------------------
 #  polys <- as(sF, "SpatialPolygons")
@@ -63,13 +71,15 @@ opts_chunk$set(eval = FALSE,
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 #  nat_data <- data.frame(nat_data, centroids)
-#  write.csv(nat_data, "National-data-2013.csv", row.names=FALSE)
+
+## ---- eval=FALSE---------------------------------------------------------
+#  write.csv(nat_data, "National-data-2016.csv", row.names=FALSE)
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 #  library(ggplot2)
 #  library(ggthemes)
 #  ggplot(aes(map_id=id), data=nat_data) +
-#    geom_map(aes(fill=AREA_SQKM), map=nat_map) +
+#    geom_map(aes(fill=Area_SqKm), map=nat_map) +
 #    expand_limits(x=nat_map$long, y=nat_map$lat) +
 #    theme_map()
 
