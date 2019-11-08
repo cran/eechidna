@@ -3,10 +3,10 @@
 \docType{data}
 \name{nat_data01}
 \alias{nat_data01}
-\title{Data of the Australian Electorates from 2001}
+\title{Data and centroids corresponding to the Australian Electorates from 2001}
 \format{A data frame with 150 rows with the following variables:
 \itemize{
-    \item id: numeric identifier for the polygon
+    \item id: Numeric identifier for the polygon
     \item elect_div: Electorate division name   
     \item state: abbreviation of the state name
     \item long_c: longitude coordinate of electorate (polygon) centroid
@@ -22,6 +22,6 @@ nat_data01
 A dataset containing some demographic information for each of the 150 Australian electorates.
 The data were obtained from the Australian Government, and downloaded 
 from \url{https://data.gov.au/dataset/ds-dga-0b939a62-e53e-4616-add5-77f909b58ddd/details?q=asgc\%202001}.
-The data is published
+Must be loaded using the `nat_data_download` function.
 }
 \keyword{datasets}

@@ -6,7 +6,7 @@
 \title{Map of Australian Electorates from 2016}
 \format{A data frame with the following variables:
 \itemize{
-    \item id: numeric identifier for the polygon
+    \item id: Numeric identifier for the polygon
     \item long: longitude coordinate of point in polygon
     \item lat: latitude coordinate of point in polygon
     \item order: order for polygon points
@@ -22,12 +22,13 @@ nat_map16
 \description{
 A dataset containing the map of the all 150 Australian electorates using the 2016 boundaries of the 
 The data were obtained from the Australian Electoral Commission, and downloaded 
-from \url{http://www.aec.gov.au/Electorates/gis/gis_datadownload.htm}.
+from \url{http://www.aec.gov.au/Electorates/gis/gis_datadownload.htm}. Must be loaded using the
+`nat_map_download` function.
 }
 \examples{
 
 library(eechidna)
-data(nat_map16)
+nat_map16 <- nat_map_download(2016)
 # choropleth map with Australian Census data
 nat_map16$region <- nat_map16$elect_div
 data(abs2016)

@@ -6,7 +6,7 @@
 \title{Map of Australian Electorates from 2007}
 \format{A data frame with the following variables:
 \itemize{
-    \item id: numeric identifier for the polygon
+    \item id: Numeric identifier for the polygon
     \item long: longitude coordinate of point in polygon
     \item lat: latitude coordinate of point in polygon
     \item order: order for polygon points
@@ -21,8 +21,8 @@ nat_map07
 }
 \description{
 A dataset containing the map of the all 150 Australian electorates using the 2007 boundaries of the 
-electorates (and downsampled to a 5\% file to allow fast plotting).
-The data were obtained from the Australian Electoral Commission, and downloaded 
-from \url{http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/2923.0.30.0012006?OpenDocument}.
+electorates. The data were obtained from the Australian Electoral Commission, and downloaded 
+from \url{http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/2923.0.30.0012006?OpenDocument}. 
+Must be loaded using the `nat_map_download` function.
 }
 \keyword{datasets}

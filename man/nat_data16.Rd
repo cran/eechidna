@@ -3,10 +3,10 @@
 \docType{data}
 \name{nat_data16}
 \alias{nat_data16}
-\title{Data of the Australian Electorates from 2016}
+\title{Data and centroids corresponding to the Australian Electorates from 2016}
 \format{A data frame with 150 rows with the following variables:
 \itemize{
-    \item id: numeric identifier for the polygon
+    \item id: Numeric identifier for the polygon
     \item elect_div: Electorate division name   
     \item state: abbreviation of the state name
     \item numccds: AEC variable that might be filled with meaning or a description down the road
@@ -24,20 +24,26 @@ nat_data16
 A dataset containing some demographic information for each of the 150 Australian electorates.
 The data were obtained from the Australian Electoral Commission, and downloaded 
 from \url{http://www.aec.gov.au/Electorates/gis/gis_datadownload.htm}.
-The data is published
+Must be loaded using the `nat_data_download` function.
 }
 \examples{
 
 library(eechidna)
 library(tidyverse)
 library(ggthemes)
-data(nat_map16)
+nat_map16 <- nat_map_download(2016)
 data(fp16)
 winners <- fp16 \%>\% filter(Elected == "Y")
-data(nat_data16)
+
+# Combine Liberal and National parties
+winners <- winners \%>\% 
+mutate(PartyNm = ifelse(PartyNm \%in\% c("NATIONAL PARTY", "LIBERAL PARTY"), 
+"LIBERAL NATIONAL COALITION", PartyNm))
+
+# Join to map
+nat_data16 <- nat_data_download(2016)
 nat_data16$DivisionNm <- toupper(nat_data16$elect_div)
 nat_data16 <- nat_data16 \%>\% left_join(winners, by = "DivisionNm")
-
 # Plot
 partycolours = c("#FF0033", "#000000", "#CC3300", "#0066CC", "#FFFF00", "#009900")
 

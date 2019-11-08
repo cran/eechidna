@@ -54,21 +54,21 @@ ggplot(total_votes_for_parties,
   xlab("Party") +
   theme(text = element_text(size=8))
 
-## ----eval = F------------------------------------------------------------
-#  # Download TPP for all elections
-#  tpp_pollingbooth <- twoparty_pollingbooth_download()
-#  
-#  # Plot the densities of the TPP vote in each election
-#  tpp_pollingbooth %>%
-#    filter(StateAb == "NSW") %>%
-#    ggplot(aes(x = year, y = LNP_Percent, fill = factor(year))) +
-#    geom_boxplot(alpha = 0.3) +
-#    theme_minimal() +
-#    guides(fill=F) +
-#    labs(x = "Year", y = "Two party preferred % in favour \nof the Liberal/National Coalition")
+## ------------------------------------------------------------------------
+# Download TPP for all elections
+tpp_pollingbooth <- twoparty_pollingbooth_download()
+
+# Plot the densities of the TPP vote in each election
+tpp_pollingbooth %>% 
+  filter(StateAb == "NSW") %>% 
+  ggplot(aes(x = year, y = LNP_Percent, fill = factor(year))) + 
+  geom_boxplot(alpha = 0.3) +
+  theme_minimal() + 
+  guides(fill=F) +
+  labs(x = "Year", y = "Two party preferred % in favour \nof the Liberal/National Coalition")
 
 ## ----echo = F, message = F, out.width="600px"----------------------------
-knitr::include_graphics("fig/tpp_plot.png")
+#knitr::include_graphics("fig/tpp_plot.png")
 
 ## ------------------------------------------------------------------------
 # Dimensions
@@ -122,8 +122,8 @@ bind_rows(abs2016 %>% mutate(year = "2016"), abs2011 %>% mutate(year = "2011"), 
 
 ## ------------------------------------------------------------------------
 library(ggthemes)
-data(nat_map16)
-data(nat_data16)
+nat_map16 <- nat_map_download(2016)
+nat_data16 <- nat_data_download(2016)
 
 ggplot(aes(map_id=id), data=nat_data16) +
   geom_map(aes(fill=state), map=nat_map16, col = "grey50") +
@@ -140,6 +140,10 @@ map.winners <- fp16 %>% filter(Elected == "Y") %>%
 map.winners$PartyNm <- as.character(map.winners$PartyNm)
 map.winners <- map.winners %>% arrange(group, order)
 
+# Combine Liberal and National parties
+map.winners <- map.winners %>% 
+  mutate(PartyNm = ifelse(PartyNm %in% c("NATIONAL PARTY", "LIBERAL PARTY"), "LIBERAL NATIONAL COALITION", PartyNm))
+
 # Colour cells to match that parties colours
 # Order = Australian Labor Party, Independent, Katters, Lib/Nats Coalition, Palmer, The Greens
 partycolours = c("#FF0033", "#000000", "#CC3300", "#0066CC", "#FFFF00", "#009900")
@@ -155,6 +159,11 @@ ggplot(data=map.winners) +
 cart.winners <- fp16 %>% filter(Elected == "Y") %>% 
   select(DivisionNm, PartyNm) %>% 
   merge(nat_data16, by.x="DivisionNm", by.y="elect_div")
+
+# Combine Liberal and National parties
+cart.winners <- cart.winners %>% 
+  mutate(PartyNm = ifelse(PartyNm %in% c("NATIONAL PARTY", "LIBERAL PARTY"), "LIBERAL NATIONAL COALITION", PartyNm))
+
 
 # Plot dorling cartogram
 ggplot(data=nat_map16) +
