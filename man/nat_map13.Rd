@@ -4,7 +4,8 @@
 \name{nat_map13}
 \alias{nat_map13}
 \title{Map of Australian Electorates from 2013}
-\format{A data frame with the following variables:
+\format{
+A data frame with the following variables:
 \itemize{
     \item id: Numeric identifier for the polygon
     \item long: longitude coordinate of point in polygon
@@ -15,7 +16,8 @@
     \item group: group for polygon
     \item elect_div: Electoral division name
     \item state: Abbreviation for state name
-}}
+}
+}
 \usage{
 nat_map13
 }
@@ -23,7 +25,7 @@ nat_map13
 A dataset containing the map of the all 150 Australian electorates using the 2013 boundaries of the 
 electorates.
 The data were obtained from the Australian Electoral Commission, and downloaded 
-from \url{http://www.aec.gov.au/Electorates/gis/gis_datadownload.htm}. Must be loaded using the
+from \url{https://www.aec.gov.au/Electorates/gis/gis_datadownload.htm}. Must be loaded using the
 `nat_map_download` function.
 }
-\keyword{datasets}
+\keyword{internal}

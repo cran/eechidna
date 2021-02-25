@@ -1,7 +1,7 @@
-## ----setup, include=FALSE------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
 
-## ----message = F---------------------------------------------------------
+## ----message = F--------------------------------------------------------------
 library(knitr)
 library(dplyr)
 library(eechidna)
@@ -17,12 +17,12 @@ data16 %>%
   head() %>% 
   kable
 
-## ----echo = TRUE, message = FALSE----------------------------------------
+## ----echo = TRUE, message = FALSE---------------------------------------------
 # Load data
 data(fp16)
 data(tcp16)
 
-## ----who_won, message = FALSE--------------------------------------------
+## ----who_won, message = FALSE-------------------------------------------------
 who_won <- tcp16 %>% 
   filter(Elected == "Y") %>% 
   group_by(PartyNm) %>% 
@@ -33,7 +33,7 @@ who_won <- tcp16 %>%
 who_won %>% 
   kable()
 
-## ----total_votes_for_parties, message = F--------------------------------
+## ----total_votes_for_parties, message = F-------------------------------------
 total_votes_for_parties <- fp16 %>% 
   select(PartyNm, OrdinaryVotes) %>% 
   group_by(PartyNm) %>% 
@@ -54,7 +54,7 @@ ggplot(total_votes_for_parties,
   xlab("Party") +
   theme(text = element_text(size=8))
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Download TPP for all elections
 tpp_pollingbooth <- twoparty_pollingbooth_download()
 
@@ -67,10 +67,10 @@ tpp_pollingbooth %>%
   guides(fill=F) +
   labs(x = "Year", y = "Two party preferred % in favour \nof the Liberal/National Coalition")
 
-## ----echo = F, message = F, out.width="600px"----------------------------
+## ----echo = F, message = F, out.width="600px"---------------------------------
 #knitr::include_graphics("fig/tpp_plot.png")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Dimensions
 dim(abs2016)
 
@@ -80,7 +80,7 @@ abs2016 %>%
   head %>% 
   kable
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 ggplot(data = abs2016,
        aes(x = reorder(State, -Unemployed),
            y = Unemployed,
@@ -91,7 +91,7 @@ ggplot(data = abs2016,
   theme_minimal() + 
   theme(legend.position = "none") 
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 ggplot(data = abs2016,
        aes(x = reorder(State, -MedianPersonalIncome),
            y = MedianPersonalIncome,
@@ -104,7 +104,7 @@ ggplot(data = abs2016,
   theme(legend.position = "none") + 
   labs(x = "State", y = "Median Personal Income ($)")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Load
 data(abs2011)
 data(abs2006)
@@ -120,7 +120,7 @@ bind_rows(abs2016 %>% mutate(year = "2016"), abs2011 %>% mutate(year = "2011"), 
   theme_minimal()
   
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(ggthemes)
 nat_map16 <- nat_map_download(2016)
 nat_data16 <- nat_data_download(2016)
@@ -130,7 +130,7 @@ ggplot(aes(map_id=id), data=nat_data16) +
   expand_limits(x=nat_map16$long, y=nat_map16$lat) + 
   theme_map() + coord_equal()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Get the electorate winners
 map.winners <- fp16 %>% filter(Elected == "Y") %>% 
   select(DivisionNm, PartyNm) %>% 
@@ -154,7 +154,7 @@ ggplot(data=map.winners) +
   scale_fill_manual(name="Political Party", values=partycolours) +
   theme_map() + coord_equal() + theme(legend.position="bottom")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Get winners
 cart.winners <- fp16 %>% filter(Elected == "Y") %>% 
   select(DivisionNm, PartyNm) %>% 
@@ -173,7 +173,7 @@ ggplot(data=nat_map16) +
   scale_colour_manual(name="Political Party", values=partycolours) +
   theme_map() + coord_equal() + theme(legend.position="bottom")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Join
 data16 <- left_join(tpp16 %>% select(LNP_Percent, UniqueID), abs2016, by = "UniqueID")
 
@@ -188,7 +188,7 @@ lmod %>%
   glance %>% 
   kable
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # See which variables are individually significant
 lmod %>% 
   tidy %>% 
